@@ -1,0 +1,67 @@
+{
+	"info": {
+		"_postman_id": "396a3bb9-7e70-4597-b957-d38684ae3368",
+		"name": "pikmin-schema-registry",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+	},
+	"item": [
+		{
+			"name": "pikmin-value schema",
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n    \"schema\": \"{\\\"name\\\":\\\"MyClass\\\",\\\"type\\\":\\\"record\\\",\\\"namespace\\\":\\\"com.acme.avro\\\",\\\"fields\\\":[{\\\"name\\\":\\\"color\\\",\\\"type\\\":\\\"string\\\"},{\\\"name\\\":\\\"type\\\",\\\"type\\\":\\\"string\\\"},{\\\"name\\\":\\\"state\\\",\\\"type\\\":\\\"string\\\"}]}\"\r\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "localhost:8081/subjects/pikmin-value/versions",
+					"host": [
+						"localhost"
+					],
+					"port": "8081",
+					"path": [
+						"subjects",
+						"pikmin-value",
+						"versions"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "pikmin-key schema",
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n    \"schema\": \"{\\\"name\\\":\\\"MyClass\\\",\\\"type\\\":\\\"record\\\",\\\"namespace\\\":\\\"com.acme.avro\\\",\\\"fields\\\":[{\\\"name\\\":\\\"id\\\",\\\"type\\\":\\\"int\\\"},{\\\"name\\\":\\\"captain\\\",\\\"type\\\":\\\"string\\\"}]}\"\r\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "localhost:8081/subjects/pikmin-key/versions",
+					"host": [
+						"localhost"
+					],
+					"port": "8081",
+					"path": [
+						"subjects",
+						"pikmin-key",
+						"versions"
+					]
+				}
+			},
+			"response": []
+		}
+	]
+}

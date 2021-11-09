@@ -1,0 +1,91 @@
+version: '3'
+services:
+
+  zookeeper:
+    image: confluentinc/cp-zookeeper:6.2.0
+    environment:
+      ZOOKEEPER_CLIENT_PORT: 2181
+      ZOOKEEPER_TICK_TIME: 2000
+    ports:
+      - 22181:2181
+
+  kafka:
+    container_name: kafka
+    hostname: kafka
+    image: confluentinc/cp-kafka:6.2.0
+    depends_on:
+      - zookeeper  
+    ports:
+      - 29092:29092
+    environment:
+      KAFKA_BROKER_ID: 1
+      KAFKA_ZOOKEEPER_CONNECT: zookeeper:2181
+      KAFKA_ADVERTISED_LISTENERS: PLAINTEXT://kafka:9092,PLAINTEXT_HOST://localhost:29092
+      KAFKA_LISTENER_SECURITY_PROTOCOL_MAP: PLAINTEXT:PLAINTEXT,PLAINTEXT_HOST:PLAINTEXT
+      KAFKA_INTER_BROKER_LISTENER_NAME: PLAINTEXT
+      KAFKA_OFFSETS_TOPIC_REPLICATION_FACTOR: 1
+
+  schema-registry:
+    image: confluentinc/cp-schema-registry:6.2.0
+    hostname: schema-registry
+    ports:
+      - '8081:8081'
+    environment:
+      SCHEMA_REGISTRY_HOST_NAME: schema-registry
+      SCHEMA_REGISTRY_KAFKASTORE_CONNECTION_URL: zookeeper:2181
+      SCHEMA_REGISTRY_BOOTSTRAP_SERVERS: kafka:9092
+
+  go-producer:
+    build:
+      context: ./go-producer
+      dockerfile: Dockerfile
+    ports: 
+     - "9999:3001"
+    env_file:
+      - ./go-producer/dev.env
+
+  kafka-connect-jdbc-sink:
+    build:
+      context: ./kafka-connect-jdbc-sink
+      dockerfile: Dockerfile
+    ports:
+      - 8084:8084
+    env_file:
+      - ./kafka-connect-jdbc-sink/dev.env
+
+  postgres:
+    image: postgres:10.16
+    env_file:
+      - ./postgres/dev.env
+    volumes:
+      - pgsql-volume-container:/var/lib/mysql
+    ports:
+      - 5432:5432
+
+  adminer:
+    image: adminer:latest
+    environment:
+      ADMINER_DEFAULT_SERVER: postgres
+    ports:
+      - 8080:8080
+
+  akhq:
+    image: tchiotludo/akhq:0.15.0
+    environment:
+      AKHQ_CONFIGURATION: |
+        akhq:
+          connections:
+            docker-kafka-server:
+              properties:
+                bootstrap.servers: "kafka:9092"
+              schema-registry:
+                url: "http://schema-registry:8081"
+              connect:
+                - name: connect
+                  url: "http://kafka-connect:8083"
+    ports:
+      - 8085:8080
+
+
+volumes:
+  pgsql-volume-container:

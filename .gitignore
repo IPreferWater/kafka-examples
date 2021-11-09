@@ -1,0 +1,3 @@
+*/*preprod.json
+*/preprod.env
+go-producer/certs/*
